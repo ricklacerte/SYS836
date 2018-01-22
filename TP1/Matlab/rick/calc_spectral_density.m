@@ -22,7 +22,7 @@ dsp_x(1:length(dsp_x)) = 2*dsp_x(1:length(dsp_x)); % fft (partie négative)
 
 freq = 0:Fs/length(x_data):Fs/2;
 
-plot(freq, convert_to_db(dsp_x));
+plot(freq, dsp_x);
 xlabel('Freq(Hz)');
 ylabel('DSP de x(t) en dB');
 
