@@ -1,6 +1,5 @@
 
 function calc_spectral_density( x_data, Fs, graph_name)
-% look for fft_shift
 
 % signal x(t)
 subplot(2,1,1);
@@ -13,19 +12,17 @@ ylabel('x(t)');
 
 % Densité spectrale de puissance de x(t)
 subplot(2,1,2);
-v_fft = fft(x_data);
+v_fft = fftshift(fft(x_data));
 N = length(v_fft);
 
-v_fft = v_fft(1:N/2+1);
 dsp_x = (1/(Fs*N)) * abs(v_fft).^2; % DSP = |fft|^2 * T
-dsp_x(1:length(dsp_x)) = 2*dsp_x(1:length(dsp_x)); % fft (partie négative)
-
-freq = 0:Fs/length(x_data):Fs/2;
+freq = 0:Fs/length(x_data):Fs-1;
 
 plot(freq, dsp_x);
+xlim([min(freq) max(freq)]);
+ylim([min(dsp_x) max(dsp_x)]);
 xlabel('Freq(Hz)');
 ylabel('DSP de x(t) en dB');
-
 
 if (strcmp(graph_name,'') == false)
   saveas (1, graph_name);
