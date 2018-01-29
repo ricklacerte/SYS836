@@ -25,6 +25,6 @@ xlabel('Freq(Hz)');
 ylabel('DSP de x(t) en dB');
 
 if (strcmp(graph_name,'') == false)
-  saveas (1, graph_name);
+  saveas (1, graph_name, 'jpg');
 end
 end
