@@ -4,6 +4,7 @@ addpath(genpath('..\MatlabLib'));
 %  Rayleigh et celui de Rice ?
 
 %TODO... Think it's the doppler phenomena or the effect of a moving receptor. 
+% without scattering 
 
 %2) Pour une fréquence Doppler ?? = 10 ?? ?? ? = 2, générer 100000 échantillons qui
 %   seront transmis sur un canal de Rice à un rythme de 10 ksymbs/s. Vous utiliserez
