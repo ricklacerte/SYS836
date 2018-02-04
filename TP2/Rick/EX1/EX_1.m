@@ -41,16 +41,41 @@ SPECTRUM_ANALYZER(RX_SIGNAL);
 
 %5) Pour  une  fréquence  Doppler Fd = [50 100 150],  montrer l’influence
 %   de Fd sur l’amplitude des échantillons.
-
+RX_SIGNALS = [];
 for FD = 50:50:150
     CHANNEL = rayleighchan(TS, FD);
     RX_SIGNAL = filter(CHANNEL, TX_SIGNAL);
-    constellation(sprintf('RX_FD_%d',FD),RX_SIGNAL);
-    dist_amp(sprintf('RX_FD_%d',FD),RX_SIGNAL);
+    SIGNAL_NAME = sprintf('FD=%d',FD);
+    if numel(RX_SIGNALS)
+        RX_SIGNALS = horzcat(RX_SIGNALS,RX_SIGNAL);
+        SIGNAL_NAMES = [cellstr(SIGNAL_NAMES),cellstr(SIGNAL_NAME)];
+    else
+        RX_SIGNALS = RX_SIGNAL;
+        SIGNAL_NAMES = SIGNAL_NAME;
+    end        
 end
-
+dist_amp(SIGNAL_NAMES,RX_SIGNALS);
 
 %6) A l’aide d’une simulation Matlab ou Simulink,  réaliser des  courbes  de  performances 
 %   pour la modulation OQPSK et avec une diversité L= [1 2 4]. Commenter
 
 % What do you mean by performance? BER?
+% QPSK L = 1 !? marche pas (4 symbols = least 2 bits per symbols)
+FD = 10;
+MODULATOR = comm.OQPSKModulator; 
+CHANNEL = rayleighchan(TS, FD);
+CHANNEL.StoreHistory = 1;
+%CHANNEL.PathDelays = [0 1e-6]; 
+
+for L = [2 4]
+    MODULATOR = comm.OQPSKModulator('BitInput', true, 'SamplesPerSymbol', L);
+    TX_SIGNAL = MODULATOR(SIGNAL);
+    RX_SIGNAL = filter(CHANNEL, TX_SIGNAL);
+    
+    DEMODULATOR = comm.OQPSKDemodulator(MODULATOR);
+    DEMOD_SIGNAL = DEMODULATOR(RX_SIGNAL);
+    
+    %delay = (1+MODULATOR.BitInput)*modulator.FilterSpanInSymbols;
+    [~, ber] = biterr(SIGNAL, DEMOD_SIGNAL);
+    fprintf('Bit error rate for L=%d: %f\n', L,ber);
+end
