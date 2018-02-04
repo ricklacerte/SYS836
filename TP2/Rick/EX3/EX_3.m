@@ -10,19 +10,33 @@
 % Dans un premier temps, créer les spectres Doppler pour le modèle COST 207. Ensuite
 % un canal de Rayleigh sera appliqué. Enfin, visualiser certaines propriétés du canal.
 % Le profil en puissance des retards utilisé est le suivant :
-% ? = [0 200 600 1600 2400 5000] ? 1?
-% ?9
-% ? = [?3 0 ? 2 ? 6 ? 8 ? 10]
+% TAU = [0 200 600 1600 2400 5000] * 1E-9
+% P = [-3 0 - 2 - 6 - 8 - 10]
+
+%  Euh... What!?
 
 % a) Pour une fréquence Doppler ?? = 10 ??, générer 50000 échantillons qui
 % seront transmis sur un canal de Rayleigh à un rythme de 1 Msymbs/s. Vous
 % utiliserez l’objet « rayleighchan » de Matlab.
+FD=10;
+N=50E3;
+TS=1/1E6;
+FS=1/TS;
 
+SIGNAL = randsrc(N,1,[0 1]);
+MODULATOR = comm.BPSKModulator;
+TX_SIGNAL = MODULATOR(SIGNAL);
+
+CHANNEL = rayleighchan(TS, FD);
+CHANNEL.StoreHistory = 1;
+
+RX_SIGNAL = filter(CHANNEL, TX_SIGNAL);
 
 
 % b) A l’aide d’une simulation appropriée, montrer que ce canal est sélectif en
 % fréquence.
 
+%plot(CHANNEL);
 
 
 % 3) Applications GSM/EDGE : Plusieurs modèles de canaux GSM / EDGE sont basés
@@ -43,4 +57,29 @@
 % c = 3e8; % Vitesse de la lumière
 % fd = v*fc/c; % Maximum Doppler de la composante diffuse
 
+M = 8; % ordre de modulation
+N = 1E4; %Nombre d’échantillons
+Nframes = 6;
+Rsym = 9600; % Rythme symbole
+Rbit = Rsym * log2(M); % Rythme binaire
+Nos = 4; % facteur de suréchantillonnage
+ts = (1/Rbit) / Nos; % Période d’échantillonnage
+v = 120 * 1e3/3600; % Vitesse du mobile (m/s)
+fc = 1800e6; % Fréquence porteuse
+c = 3e8; % Vitesse de la lumière
+fd = v*fc/c; % Maximum Doppler de la composante diffuse
+
+MODULATOR = comm.PSKModulator(M);
+
+SIGNAL = randsrc(N,1,[0 1]);
+TX_SIGNAL = MODULATOR(SIGNAL);
+
+CHANNEL = stdchan(ts,fd,'gsmRAx6c1');
+CHANNEL.StoreHistory = 1;
+CHANNEL.PathDelays = [0 200 600 1600 2400 5000] * 1E-9;
+CHANNEL.AvgPathGaindB = [-3 0 -2 -6 -8 -10];
+
+RX_SIGNAL = filter(CHANNEL, TX_SIGNAL);
+
 % b) Visualiser les spectres Doppler et scattering. Commenter
+plot(CHANNEL);
