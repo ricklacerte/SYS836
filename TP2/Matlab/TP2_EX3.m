@@ -1,5 +1,7 @@
 % 1) Qu’est-ce qu’un canal sélectif en fréquence ? Expliquer 
 %% voir EX1.3.
+
+% https://www.mathworks.com/help/comm/examples/cost-207-and-gsm-edge-channel-models.html
 % 2) COST 207
 % créer les spectres Doppler pour le modèle COST 207.
 % canal de rayleigh
