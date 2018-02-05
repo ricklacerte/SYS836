@@ -18,13 +18,14 @@ hist(angle(y), 1000);
 
 % 3) A l’aide d’une simulation appropriée, montrer que ce canal n’est pas sélectif en
 % fréquence.
+sa = dsp.SpectrumAnalyzer('SampleRate',fs,'SpectralAverages',10);
+step(sa,y)
 
 % durée symbole > RI du canal (delay spread) == pas ISI
 % ou
 % eye diagram
 % ou
 % réponse fréquentielle plate
-% ou 
 
 % 4) Rappeler la définition de temps de cohérence et bande de cohérence d’un canal.
 % Quelles sont les valeurs du temps de cohérence et de la bande de cohérence de ce
