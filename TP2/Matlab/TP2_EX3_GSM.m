@@ -1,16 +1,3 @@
-% 1) Qu’est-ce qu’un canal sélectif en fréquence ? Expliquer 
-%% voir EX1.3.
-
-% https://www.mathworks.com/help/comm/examples/cost-207-and-gsm-edge-channel-models.html
-% 2) COST 207
-% créer les spectres Doppler pour le modèle COST 207.
-% canal de rayleigh
-% ? = [0 200 600 1600 2400 5000] ? 1??9
-% ? = [?3 0 ? 2 ? 6 ? 8 ? 10]
-% fd = 10 Hz, 50000 échantillons, 1Msym/s
-% montrer que canal est sélectif en fréquence
-
-
 % 3) GSM/EDGE
 % stdchan
 M = 8; % ordre de modulation
