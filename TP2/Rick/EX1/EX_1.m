@@ -18,8 +18,8 @@ CHANNEL.StoreHistory = 1;
 TX_SIGNAL = MODULATOR(SIGNAL);
 RX_SIGNAL = filter(CHANNEL, TX_SIGNAL);
 
-%constellation('TX',TX_SIGNAL);
-%constellation('RX',RX_SIGNAL);
+constellation('TX',TX_SIGNAL);
+constellation('RX',RX_SIGNAL);
 
 %2) Avec  la  fonction  «hist»,  montrer que  l’amplitude  de  ces  échantillons  suit
 %   une distribution de probabilité de Rayleigh et que la phase
@@ -54,7 +54,18 @@ for FD = 50:50:150
         SIGNAL_NAMES = SIGNAL_NAME;
     end        
 end
-dist_amp(SIGNAL_NAMES,RX_SIGNALS);
+
+for i = 1:3
+    subplot(3,1,i);
+    title(SIGNAL_NAMES(i))
+    plot(abs(RX_SIGNALS(:,i)));
+    title(SIGNAL_NAMES(i));
+    ylabel('Amplitude');
+end
+
+
+
+%dist_amp(SIGNAL_NAMES,RX_SIGNALS);
 
 %6) A l’aide d’une simulation Matlab ou Simulink,  réaliser des  courbes  de  performances 
 %   pour la modulation OQPSK et avec une diversité L= [1 2 4]. Commenter
@@ -76,6 +87,8 @@ for L = [2 4]
     DEMOD_SIGNAL = DEMODULATOR(RX_SIGNAL);
     
     %delay = (1+MODULATOR.BitInput)*modulator.FilterSpanInSymbols;
-    [~, ber] = biterr(SIGNAL, DEMOD_SIGNAL);
-    fprintf('Bit error rate for L=%d: %f\n', L,ber);
+    %EbNo = 3:0.5:8;    
+    %[ber, ser] = berawgn(EbNo,'pam',M);
+    %[~, ber] = biterr(SIGNAL, DEMOD_SIGNAL);
+    %fprintf('Bit error rate for L=%d: %f\n', L,ber);
 end
