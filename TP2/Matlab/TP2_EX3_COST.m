@@ -13,9 +13,8 @@
 
 % sim params
 M = 4;                      % Modulation order
-
-psk8Mod = comm.PSKModulator(M, 'PhaseOffset', 0); % PSK Modulator System object
-
+psk4Mod = comm.PSKModulator(M, 'PhaseOffset', 0); % PSK Modulator System object
+%Rsym = 9600;
 Rsym = 125000;                % Input symbol rate
 Rbit = Rsym * log2(M);      % Input bit rate
 Nos = 4;                    % Oversampling factor
@@ -37,11 +36,15 @@ chan.ResetBeforeFiltering = 0;
 chan.NormalizePathGains = 1;
 
 % simulation
-Nframes = 1;
+Nframes = 16;
 Nsamples = 5e4;
 for iFrames = 1:Nframes
-    y = filter(chan, psk8Mod(randi([0 M-1],Nsamples,1)));
+    y = filter(chan, psk4Mod(randi([0 M-1],Nsamples,1)));
     plot(chan);
     % Select the frequency response as the current visualization.
     if iFrames == 1, channel_vis(chan, 'visualization', 'fr'); end
 end
+%   y = filter(chan, psk4Mod(randi([0 M-1],Nsamples,1)));
+sa = dsp.SpectrumAnalyzer('SampleRate',1/ts,'SpectralAverages',10);
+step(sa,y)
+
