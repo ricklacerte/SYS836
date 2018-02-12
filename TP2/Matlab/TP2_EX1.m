@@ -28,6 +28,16 @@ step(sa,y)
 % réponse fréquentielle plate
 
 % 4) Rappeler la définition de temps de cohérence et bande de cohérence d’un canal.
+% La bande de cohérence == 1/Max excess delay == 1/inf =~ 0
+% depends on the multipath spread or, equivalently, on the coherence bandwidth
+% of the channel relative to the transmitted signal bandwidth W.
+% Le temps de cohérence == 1/Bd = 1/(2*Fd)
+% Additional distortion is caused by the time variations in C( f ; t).
+% depends on 
+% the time variations of the channel, which are grossly characterized by
+% the coherence time (Delata t)c or, equivalently, by the Doppler spread Bd .
+% This type of distortion is evidenced as a variation in the received
+% signal strength, and has been termed fading.
 % Quelles sont les valeurs du temps de cohérence et de la bande de cohérence de ce
 % canal ?
 % ????
@@ -39,7 +49,8 @@ for Fd=[50 100 150]
     y = filter(chan, dpskSig);
     legend = sprintf('Distribution de l''amplitude Fd = %d',fd);
     figure('Name',legend,'NumberTitle','off');
-    saveas(histogram(10*log10(abs(y)), 1000),sprintf('rayleighchan_amp_%d.png',fd)); 
+    plot(y);
+    % saveas(histogram(10*log10(abs(y)), 1000),sprintf('rayleighchan_amp_%d.png',fd)); 
 end
 % l'amplitude des échantillons augmente
 
@@ -47,15 +58,28 @@ end
 % pour la modulation OQPSK et avec une diversité L= [1 2 4]. Commenter
 % L = ?? nombre de porteuses, espacées d'au moins 1 bande de cohérence.?
 % OQPSK
-L = [1 2 4]; % ??
-Fs = 1/10e3;
-Fd = 10;
-tx = randsrc(100000,1,[0 1]);
-oqpskMod = comm.OQPSKModulator;
-oqpskDemod = comm.OQPSKDemodulator(oqpskMod);
-oqpskSig = oqpskMod(tx);
-chan = rayleighchan(Fs, Fd);
-y = filter(chan, oqpskSig);
-rx = oqpskDemod(y);
-errorCalc = comm.ErrorRate;
-BER = errorCalc(rx, tx);
+EbNo=0:2:18;
+ber = zeros(length(EbNo),3);
+for L=[1 2 4]
+    ber(:,L) = berfading(EbNo,'oqpsk',L);
+    semilogy(EbNo,ber,'b')
+    text(16, 0.02, sprintf('L=%d',1))
+    text(16, 1e-5, sprintf('L=%d',4))
+    title('OQPSK over fading channel with diversity order 1, 2 & 4')
+    xlabel('E_b/N_0 (dB)')
+    ylabel('BER')
+    grid on
+    %saveas(histogram(10*log10(abs(y)), 1000),sprintf('rayleighchan_amp_%d.png',fd)); 
+end
+% L = [1 2 4]; % ??
+% Fs = 1/10e3;
+% Fd = 10;
+% tx = randsrc(100000,1,[0 1]);
+% oqpskMod = comm.OQPSKModulator;
+% oqpskDemod = comm.OQPSKDemodulator(oqpskMod);
+% oqpskSig = oqpskMod(tx);
+% chan = rayleighchan(Fs, Fd);
+% y = filter(chan, oqpskSig);
+% rx = oqpskDemod(y);
+% errorCalc = comm.ErrorRate;
+% BER = errorCalc(rx, tx);

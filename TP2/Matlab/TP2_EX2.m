@@ -22,3 +22,19 @@ RicianChanOut1 = ricechan (dpskSig);
 
 % 4) A l’aide d’une simulation Matlab ou Simulink, réaliser des courbes de performances
 % pour la modulation OQPSK avec K = [0 2] et une diversité L= [1 2 4]. Commenter
+
+EbNo=0:2:18;
+ber = zeros(length(EbNo),3);
+for K=[0 2]
+for L=[1 2 4]
+    ber(:,L) = berfading(EbNo,'oqpsk',L,K);
+    semilogy(EbNo,ber,'b')
+    text(16, 0.02, sprintf('L=%d',1))
+    text(16, 1e-5, sprintf('L=%d',4))
+    title(sprintf('OQPSK over K=%d fading channel with diversity order 1, 2 & 4',K))
+    xlabel('E_b/N_0 (dB)')
+    ylabel('BER')
+    grid on
+    %saveas();
+end
+end
