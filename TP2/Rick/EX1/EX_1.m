@@ -78,17 +78,30 @@ CHANNEL = rayleighchan(TS, FD);
 CHANNEL.StoreHistory = 1;
 %CHANNEL.PathDelays = [0 1e-6]; 
 
-for L = [2 4]
-    MODULATOR = comm.OQPSKModulator('BitInput', true, 'SamplesPerSymbol', L);
-    TX_SIGNAL = MODULATOR(SIGNAL);
-    RX_SIGNAL = filter(CHANNEL, TX_SIGNAL);
-    
-    DEMODULATOR = comm.OQPSKDemodulator(MODULATOR);
-    DEMOD_SIGNAL = DEMODULATOR(RX_SIGNAL);
-    
-    %delay = (1+MODULATOR.BitInput)*modulator.FilterSpanInSymbols;
-    %EbNo = 3:0.5:8;    
-    %[ber, ser] = berawgn(EbNo,'pam',M);
-    %[~, ber] = biterr(SIGNAL, DEMOD_SIGNAL);
-    %fprintf('Bit error rate for L=%d: %f\n', L,ber);
+% for L = [2 4]
+%     MODULATOR = comm.OQPSKModulator('BitInput', true, 'SamplesPerSymbol', L);
+%     TX_SIGNAL = MODULATOR(SIGNAL);
+%     RX_SIGNAL = filter(CHANNEL, TX_SIGNAL);
+%     
+%     DEMODULATOR = comm.OQPSKDemodulator(MODULATOR);
+%     DEMOD_SIGNAL = DEMODULATOR(RX_SIGNAL);
+%     
+%     %delay = (1+MODULATOR.BitInput)*modulator.FilterSpanInSymbols;
+%     %EbNo = 3:0.5:8;    
+%     %[ber, ser] = berawgn(EbNo,'pam',M);
+%     %[~, ber] = biterr(SIGNAL, DEMOD_SIGNAL);
+%     %fprintf('Bit error rate for L=%d: %f\n', L,ber);
+% end
+EBNO=[0:20]
+ber = zeros(length(EBNO),4);
+for L = 1:4
+    ber(:,L) = berfading(EBNO,'oqpsk',L,K);
 end
+figure()
+semilogy(EBNO,ber,'b')
+text(18.5, 0.02, sprintf('L=%d',1))
+text(18.5, 1e-11, sprintf('L=%d',4))
+title(sprintf('OQPSK over fading channel with diversity order 1 to 4'))
+xlabel('E_b/N_0 (dB)')
+ylabel('BER')
+grid on

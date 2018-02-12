@@ -35,6 +35,8 @@ RAY_CHANNEL.StoreHistory = 1;
 RX_SIGNAL = filter(RIC_CHANNEL, TX_SIGNAL);
 dist_amp({'Rayleigh','Rician'},horzcat(filter(RAY_CHANNEL, TX_SIGNAL),filter(RIC_CHANNEL, TX_SIGNAL)));
 
+SPECTRUM_ANALYZER = dsp.SpectrumAnalyzer;
+SPECTRUM_ANALYZER(RX_SIGNAL);
 plot(RIC_CHANNEL);
 
 K=0;
@@ -49,19 +51,20 @@ MODULATOR = comm.OQPSKModulator;
 CHANNEL = rayleighchan(TS, FD);
 CHANNEL.StoreHistory = 1;
 %CHANNEL.PathDelays = [0 1e-6]; 
+EBNO=[0:20]
+figure()
 
-for L = [2 4]
-    MODULATOR = comm.OQPSKModulator('BitInput', true, 'SamplesPerSymbol', L);
-    TX_SIGNAL = MODULATOR(SIGNAL);
-    for K = [0 2]
-        RIC_CHANNEL = ricianchan(TS, FD, K);
-        RX_SIGNAL = filter(RIC_CHANNEL, TX_SIGNAL);
-
-        DEMODULATOR = comm.OQPSKDemodulator(MODULATOR);
-        DEMOD_SIGNAL = DEMODULATOR(RX_SIGNAL);
-
-        %delay = (1+MODULATOR.BitInput)*modulator.FilterSpanInSymbols;
-        [~, ber] = biterr(SIGNAL, DEMOD_SIGNAL);
-        fprintf('Bit error rate for L=%d, K=%d: %f\n', L,K,ber);
+for K = [0 2]
+    ber = zeros(length(EBNO),4);
+    for L = 1:4
+        ber(:,L) = berfading(EBNO,'oqpsk',L,K);
     end
+    figure()
+    semilogy(EBNO,ber,'b')
+    text(18.5, 0.02, sprintf('L=%d',1))
+    text(18.5, 1e-11, sprintf('L=%d',4))
+    title(sprintf('OQPSK over fading channel with diversity order 1 to 4, K=%d',K))
+    xlabel('E_b/N_0 (dB)')
+    ylabel('BER')
+    grid on
 end
