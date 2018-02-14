@@ -18,22 +18,27 @@ CHANNEL.StoreHistory = 1;
 TX_SIGNAL = MODULATOR(SIGNAL);
 RX_SIGNAL = filter(CHANNEL, TX_SIGNAL);
 
-constellation('TX',TX_SIGNAL);
-constellation('RX',RX_SIGNAL);
+% constellation('TX',TX_SIGNAL);
+constDiag = comm.ConstellationDiagram('SamplesPerSymbol', 1, ...
+             'ReferenceConstellation', constellation(MODULATOR));
+         constDiag(TX_SIGNAL);
+         %constDiag(RX_SIGNAL);
+ constellation('TX',TX_SIGNAL);
+% constellation('RX',RX_SIGNAL);
 
 %2) Avec  la  fonction  «hist»,  montrer que  l’amplitude  de  ces  échantillons  suit
 %   une distribution de probabilité de Rayleigh et que la phase
 %   suit une distribution uniforme.
 
-dist_amp('RX',RX_SIGNAL);
-dist_phase('RX',RX_SIGNAL);
-
-%3) A  l’aide  d’une  simulation  appropriée,  montrer que  ce  canal  n’est  pas  
-%   sélectif  en fréquence.
-
-plot(CHANNEL); % See Freq Response is flat
-SPECTRUM_ANALYZER = dsp.SpectrumAnalyzer;
-SPECTRUM_ANALYZER(RX_SIGNAL);
+% dist_amp('RX',RX_SIGNAL);
+% dist_phase('RX',RX_SIGNAL);
+% 
+% %3) A  l’aide  d’une  simulation  appropriée,  montrer que  ce  canal  n’est  pas  
+% %   sélectif  en fréquence.
+% 
+% plot(CHANNEL); % See Freq Response is flat
+% SPECTRUM_ANALYZER = dsp.SpectrumAnalyzer;
+% SPECTRUM_ANALYZER(RX_SIGNAL);
 
 %4) Rappeler la définition de temps de cohérence et bande de cohérence d’un canal.
 %   Quelles  sont  les  valeurs  du  temps  de  cohérence  et  de  la  bande  de  cohérence
@@ -54,14 +59,24 @@ for FD = 50:50:150
         SIGNAL_NAMES = SIGNAL_NAME;
     end        
 end
+size = N;
+SIGNAL1=convert_to_db(abs(RX_SIGNALS([1:size],1)));
+SIGNAL2=convert_to_db(abs(RX_SIGNALS([1:size],2)));
+SIGNAL3=convert_to_db(abs(RX_SIGNALS([1:size],3)));
+X=[1:length(SIGNAL1)].*TS;
 
-for i = 1:3
-    subplot(3,1,i);
-    title(SIGNAL_NAMES(i))
-    plot(abs(RX_SIGNALS(:,i)));
-    title(SIGNAL_NAMES(i));
-    ylabel('Amplitude');
-end
+plot(X,SIGNAL1,':k',X,SIGNAL2,'-b',X,SIGNAL3,'--r');
+legend('F_d 50','F_d 100','F_d 150');
+title('Amplitude du signal pour une F_d de 50,100 et 150');
+ylabel('temps');
+ylabel('Amplitude (dB)');
+
+plot(X,SIGNAL1,':k',X,SIGNAL2,'-b',X,SIGNAL3,'--r');
+legend('F_d 50','F_d 100','F_d 150');
+title('Amplitude du signal pour une F_d de 50,100 et 150');
+xlabel('temps');
+ylabel('Amplitude (dB)');
+
 
 
 
@@ -92,16 +107,16 @@ CHANNEL.StoreHistory = 1;
 %     %[~, ber] = biterr(SIGNAL, DEMOD_SIGNAL);
 %     %fprintf('Bit error rate for L=%d: %f\n', L,ber);
 % end
-EBNO=[0:20]
-ber = zeros(length(EBNO),4);
-for L = 1:4
-    ber(:,L) = berfading(EBNO,'oqpsk',L,K);
-end
-figure()
-semilogy(EBNO,ber,'b')
-text(18.5, 0.02, sprintf('L=%d',1))
-text(18.5, 1e-11, sprintf('L=%d',4))
-title(sprintf('OQPSK over fading channel with diversity order 1 to 4'))
-xlabel('E_b/N_0 (dB)')
-ylabel('BER')
-grid on
+% EBNO=[0:20]
+% ber = zeros(length(EBNO),4);
+% for L = 1:4
+%     ber(:,L) = berfading(EBNO,'oqpsk',L,K);
+% end
+% figure()
+% semilogy(EBNO,ber,'b')
+% text(18.5, 0.02, sprintf('L=%d',1))
+% text(18.5, 1e-11, sprintf('L=%d',4))
+% title(sprintf('OQPSK over fading channel with diversity order 1 to 4'))
+% xlabel('E_b/N_0 (dB)')
+% ylabel('BER')
+% grid on
