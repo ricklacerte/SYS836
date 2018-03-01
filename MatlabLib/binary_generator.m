@@ -1,4 +1,4 @@
-function signal_NRZ = generateur_NRZ(L, Fs, bit_duration, value_off, value_on)
+function signal_NRZ = binary_generator(L, Fs, bit_duration, value_off, value_on)
 % Generate Random NRZ signal of Tb seconds 
 
 bit_length_samples = round(bit_duration*Fs);
