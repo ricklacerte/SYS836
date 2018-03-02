@@ -1,4 +1,4 @@
-addpath(genpath('..\..\MatlabLib'));
+addpath(genpath('..\..\..\MatlabLib'));
 
 L=10;
 M=4;

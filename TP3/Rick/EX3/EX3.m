@@ -1,4 +1,4 @@
-addpath(genpath('..\..\MatlabLib'));
+addpath(genpath('..\..\..\MatlabLib'));
 NB_USERS = 10;
 L = 10;
 M=4
@@ -25,6 +25,8 @@ for i = 1:NB_USERS
        xlabel("Échantillons");
     end 
 end
+saveas (gcf, "train_bin.png");
+
 % 3) Expliquer les séquences de Walsh Hadamard
 
 % 4) A partir des séquences de Walsh Hadamard, constituer le mélange des signaux et étaler
@@ -55,6 +57,7 @@ for i = 1:NB_USERS
        xlabel("Échantillons");
     end 
 end
+saveas (gcf, "etalement.png");
 
 % Suréchantillonage avec la fonction porte
 figure();
@@ -76,3 +79,4 @@ for i = 1:NB_USERS
        xlabel("Échantillons");
     end 
 end
+saveas (gcf, "surechantillon.png");
