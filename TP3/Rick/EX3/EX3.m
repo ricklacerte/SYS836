@@ -41,7 +41,7 @@ CODE = hadamard(HAD_SIZE);
 figure();
 CODED_SIGNAL = zeros(NB_USERS,L*HAD_SIZE);
 for i = 1:NB_USERS
-    CODED_SIGNAL(i,:) = spread_spectrum(DATA(i,:),CODE(i,:));
+    CODED_SIGNAL(i,:) = spread_spectrum(DATA(i,:),CODE(i+1,:));
     
     subplot(NB_USERS,1,i);
     plot(CODED_SIGNAL(i,:));

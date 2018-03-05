@@ -7,51 +7,34 @@ N=63;
 M=ceil(log2(N-1))
 
 % https://www.mathworks.com/help/comm/ref/pnsequencegenerator.html
-PN = comm.PNSequence('Polynomial',[6 5 0], ...
-    'SamplesPerFrame',M,'InitialConditions',[0 0 0 0 0 1]);
-ML = [];
-
-for i = 1:N
-    x1 = PN();    
-    ML = [ML,x1];
-end
-
+PN = comm.PNSequence('Polynomial',[6 1 0], ...
+    'SamplesPerFrame',63,'InitialConditions',[0 0 0 0 0 1]);
+ML = PN();
 
 % 2) Trouver la fonction d’autocorrélation et afficher le graphique correspondant à la
 % séquence générée.
 
 figure();
-hold on
-for i = 1:N
-    [xc,lags] = xcorr(ML(:,i),ML(:,i),'coeff');
-    plot(lags,xc);
-end
+[x,xc] = xcorr(ML);
+plot(x);
 title('Auto-corrélation de la séquence ML');
 xlabel('lags');
 ylabel('auto-correlation');
 saveas (gcf, "ML_autocorr.png");
 
 % 3) Générer deux séquences de paires préférées suivant un code de Gold de taille N= 63.
-gold_gen = comm.GoldSequence('FirstPolynomial',[6 5 0],...
-    'SecondPolynomial',[6 5 0],...
-    'FirstInitialConditions',[0 0 0 0 0 1],...
-    'SecondInitialConditions',[0 0 0 0 0 1],...
-    'SamplesPerFrame',M);
-
-GOLD = [];
+pref1 = ML;
+pref2 = zeros(N,1);
 for i = 1:N
-    x = gold_gen()    
-    GOLD = [GOLD,x];
-end
+    ML = circshift(ML,M);
+    pref2(i)=ML(1);
+end    
+[x,xc]=xcorr(pref1,pref2);
+figure();
+plot(x);
 
 % 4) Afficher la fonction d’inter-corrélation de ces paires préférées.
 
-figure();
-hold on
-for i = 1:N
-    [xc,lags] = xcorr(GOLD(:,i),GOLD(:,i));
-    plot(lags,xc);
-end
 title('Auto-corrélation de la séquence Gold');
 xlabel('lags');
 ylabel('auto-correlation');
