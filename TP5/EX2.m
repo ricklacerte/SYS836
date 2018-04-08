@@ -2,8 +2,8 @@ EBNO=[0:30];
 BER_ALAMOUTI = zeros(length(EBNO));
 
 % Signal 
-N= 10^6; % Number of Data
-signal = randsrc(N,1,[0 1]);
+frmLen= 10^6; % Number of Data
+signal = randsrc(frmLen,1,[0 1]);
 
 %% ALAMOUTI BER %%
 for i = 1:length(EBNO)
@@ -18,10 +18,14 @@ for i = 1:length(EBNO)
     TX_SIGNAL = mod_signal;
 
     % Received Signal
-    AWGN = comm.AWGNChannel('EbNo',EBNO(i),'BitsPerSymbol',1);
-    CHANNEL = comm.RayleighChannel();
+    AWGN = comm.AWGNChannel('NoiseMethod', 'Signal to noise ratio (Eb/No)',...
+                            'EbNo',EBNO(i));
+    %CHANNEL = comm.RayleighChannel();
     %CHANNEL = comm.MIMOChannel('NumTransmitAntennas',2,'NumReceiveAntennas',1);
-    RX_SIGNAL = CHANNEL(AWGN(TX_SIGNAL));
+%     H(1:N:end, :, :) = (randn(frmLen/2, N, M) + ...
+%                          1i*randn(frmLen/2, N, M))/sqrt(2);
+                     
+    RX_SIGNAL = AWGN(TX_SIGNAL);
 
     % Demodulated Signal
     demodulator = comm.BPSKDemodulator; 

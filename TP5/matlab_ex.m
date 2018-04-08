@@ -74,6 +74,7 @@ H = zeros(frmLen, N, M);
 ber_noDiver  = zeros(3,length(EbNo));
 ber_Alamouti = zeros(3,length(EbNo));
 ber_MaxRatio = zeros(3,length(EbNo));
+BER_DIV1     = zeros(1,length(EbNo));
 ber_thy2     = zeros(1,length(EbNo));
 %%
 
@@ -90,8 +91,8 @@ xlabel(ax,'Eb/No (dB)');
 ylabel(ax,'BER'); 
 fig.NumberTitle = 'off';
 fig.Renderer = 'zbuffer';
-fig.Name = 'Transmit vs. Receive Diversity';
-title(ax,'Transmit vs. Receive Diversity');
+fig.Name = 'Performance MIMO pour une modulation BPSK';
+title(ax,'Performance MIMO pour une modulation BPSK');
 set(fig, 'DefaultLegendAutoUpdate', 'off');
 fig.Position = figposition([15 50 25 30]);
 
@@ -155,26 +156,31 @@ for idx = 1:length(EbNo)
     end % end of FOR loop for numPackets
 
     % Calculate theoretical second-order diversity BER for current EbNo
+    BER_DIV1(idx) = berfading(EbNo(idx),'psk',2,1);
     ber_thy2(idx) = berfading(EbNo(idx), 'psk', 2, 2);
-    
+   
     % Plot results
-    semilogy(ax,EbNo(1:idx), ber_noDiver(1,1:idx), 'r*', ...
-             EbNo(1:idx), ber_Alamouti(1,1:idx), 'go', ...
-             EbNo(1:idx), ber_MaxRatio(1,1:idx), 'bs', ...
-             EbNo(1:idx), ber_thy2(1:idx), 'm');
-    legend(ax,'No Diversity (1Tx, 1Rx)', 'Alamouti (2Tx, 1Rx)',...
-           'Maximal-Ratio Combining (1Tx, 2Rx)', ...
-           'Theoretical 2nd-Order Diversity');
+    semilogy(ax,...
+             EbNo(1:idx), ber_Alamouti(1,1:idx), 'ko:', ...
+             EbNo(1:idx), ber_MaxRatio(1,1:idx), 'bs:', ...
+             EbNo(1:idx), ber_thy2(1:idx), 'm*:', ...
+             EbNo(1:idx), BER_DIV1(1:idx), 'r*:'...
+             );
+    legend(ax,...      
+           'Alamouti (2Tx, 1Rx)',...
+           'MRC (1Tx, 2Rx)', ...
+           'Diversité ordre 2 Théorique',...
+           'Diversité ordre 1 Théorique');
     
     drawnow;
 end  % end of for loop for EbNo
  
 % Perform curve fitting and replot the results
-fitBER11 = berfit(EbNo, ber_noDiver(1,:));
-fitBER21 = berfit(EbNo, ber_Alamouti(1,:));
-fitBER12 = berfit(EbNo, ber_MaxRatio(1,:));
-semilogy(ax,EbNo, fitBER11, 'r', EbNo, fitBER21, 'g', EbNo, fitBER12, 'b');
-hold(ax,'off');
+% fitBER11 = berfit(EbNo, ber_noDiver(1,:));
+% fitBER21 = berfit(EbNo, ber_Alamouti(1,:));
+% fitBER12 = berfit(EbNo, ber_MaxRatio(1,:));
+% semilogy(ax,EbNo, fitBER11, 'r', EbNo, fitBER21, 'g', EbNo, fitBER12, 'b');
+% hold(ax,'off');
 
 % Restore default stream
 rng(s);
